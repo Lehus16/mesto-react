@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { cardsData, userData } from "../utils/constants";
 import Card from "./Card";
+import myApi from '../utils/Api'
+
+
 
 
 const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) => {
@@ -11,11 +14,16 @@ const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) => {
   const [userAvatar, setUserAvatar] = useState('')
   const [cards, setCards] = useState([])
 
+
   useEffect(() => {
-    setUserName(userData.name)
-    setUserDescription(userData.about)
-    setUserAvatar(userData.avatar)
-    setCards(cardsData)
+    myApi.getUserInfo().then(user => {
+      setUserName(user.name)
+      setUserDescription(user.about)
+      setUserAvatar(user.avatar)
+    })
+    myApi.getInitialCards().then(cards => {
+      setCards(cards)
+    })
   }, [])
 
   return (
@@ -51,8 +59,8 @@ const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) => {
         />
       </section>
       <section className="elements" aria-label="Элементы">
-        {cards.map((card, index) => (
-          <Card key={index} card={card} onCardClick={onCardClick} />
+        {cards.map((card) => (
+          <Card key={card._id} card={card} onCardClick={onCardClick} />
         ))}
       </section>
     </main>
