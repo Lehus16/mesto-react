@@ -2,4 +2,4 @@
 
 ## Перенос проекта Mesto на React.
 
-### React FC. BEM. 
+### React FC. React hooks. BEM.
