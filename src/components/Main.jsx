@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { cardsData, userData } from "../utils/constants";
 import Card from "./Card";
 import myApi from '../utils/Api'
 
