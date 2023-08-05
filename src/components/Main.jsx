@@ -1,67 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { cardsData, userData } from "../utils/constants";
+import Card from "./Card";
 
-const Main = () => {
-    const handleEditAvatarClick = () => {
-        const popup = document.querySelector(".popup-avatar");
-        if (!popup) {
-            return;
-        } else {
-            popup.classList.add("popup__openned");
-        }
-    };
 
-    const handleEditProfileClick = () => {
-        const popup = document.querySelector(".popup-edit");
-        if (!popup) {
-            return;
-        } else {
-            popup.classList.add("popup__openned");
-        }
-    };
+const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) => {
 
-    const handleAddPlaceClick = () => {
-        const popup = document.querySelector(".popup-add");
-        if (!popup) {
-            return;
-        } else {
-            popup.classList.add("popup__openned");
-        }
-    };
-    return (
-        <main className="main">
-            <section className="profile">
-                <div className="profile__image-container">
-                    <button
-                        onClick={handleEditAvatarClick}
-                        className="profile__image-edit"
-                    />
-                    <img
-                        src="#"
-                        className="profile__image"
-                        alt="Фотография Кусто"
-                    />
-                </div>
 
-                <div className="profile__info">
-                    <h1 className="profile__title">Алексей Ушаков</h1>
-                    <button
-                        onClick={handleEditProfileClick}
-                        aria-label="Редактировать профиль"
-                        type="button"
-                        className="profile__button-edit"
-                    />
-                    <p className="profile__paragraph">frontend dev</p>
-                </div>
-                <button
-                    onClick={handleAddPlaceClick}
-                    aria-label="Добавить фотографию"
-                    type="button"
-                    className="profile__button-add"
-                />
-            </section>
-            <section className="elements" aria-label="Элементы" />
-        </main>
-    );
+  const [userName, setUserName] = useState('')
+  const [userDescription, setUserDescription] = useState('')
+  const [userAvatar, setUserAvatar] = useState('')
+  const [cards, setCards] = useState([])
+
+  useEffect(() => {
+    setUserName(userData.name)
+    setUserDescription(userData.about)
+    setUserAvatar(userData.avatar)
+    setCards(cardsData)
+  }, [])
+
+  return (
+    <main className="main">
+      <section className="profile">
+        <div className="profile__image-container">
+          <button
+            onClick={onEditAvatar}
+            className="profile__image-edit"
+          />
+          <img
+            src={userAvatar}
+            className="profile__image"
+            alt="Аватарка"
+          />
+        </div>
+
+        <div className="profile__info">
+          <h1 className="profile__title">{userName}</h1>
+          <button
+            onClick={onEditProfile}
+            aria-label="Редактировать профиль"
+            type="button"
+            className="profile__button-edit"
+          />
+          <p className="profile__paragraph">{userDescription}</p>
+        </div>
+        <button
+          onClick={onAddPlace}
+          aria-label="Добавить фотографию"
+          type="button"
+          className="profile__button-add"
+        />
+      </section>
+      <section className="elements" aria-label="Элементы">
+        {cards.map((card, index) => (
+          <Card key={index} card={card} onCardClick={onCardClick} />
+        ))}
+      </section>
+    </main>
+  );
 };
 
 export default Main;
