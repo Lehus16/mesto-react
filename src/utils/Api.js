@@ -102,6 +102,14 @@ class Api {
       },
     }).then((res) => this._responseCheck(res));
   }
+
+  changeLikeCardStatus(item, isLiked) {
+    if (isLiked) {
+      return this.deleteCardLike(item);
+    } else {
+      return this.putCardLike(item);
+    }
+  }
 }
 
 

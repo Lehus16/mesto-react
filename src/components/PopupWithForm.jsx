@@ -1,6 +1,6 @@
 import React from "react";
 
-const PopupWithForm = ({ name, title, buttonText, children, isOpen, onClose }) => {
+const PopupWithForm = ({ name, title, buttonText, children, isOpen, onClose, onSubmit }) => {
 
 
   return (
@@ -11,6 +11,7 @@ const PopupWithForm = ({ name, title, buttonText, children, isOpen, onClose }) =
       }} className={`popup popup-${name} popup-overlay ${isOpen ? 'popup__openned' : ''}`}>
         <div onClick={(e) => e.stopPropagation()} className="popup__window">
           <form
+            onSubmit={onSubmit}
             autoComplete="off"
             noValidate={true}
             name={`popup-${name}`}
@@ -37,9 +38,7 @@ const PopupWithForm = ({ name, title, buttonText, children, isOpen, onClose }) =
           />
         </div>
       </div>
-
-
-    </div >
+    </div>
   )
 
 };

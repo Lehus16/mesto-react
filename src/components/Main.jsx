@@ -1,29 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import Card from "./Card";
-import myApi from '../utils/Api'
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { CardsContext } from "../contexts/CardsContext";
 
 
 
-
-const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) => {
-
-
-  const [userName, setUserName] = useState('')
-  const [userDescription, setUserDescription] = useState('')
-  const [userAvatar, setUserAvatar] = useState('')
-  const [cards, setCards] = useState([])
+const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, onCardDelete }) => {
 
 
-  useEffect(() => {
-    myApi.getUserInfo().then(user => {
-      setUserName(user.name)
-      setUserDescription(user.about)
-      setUserAvatar(user.avatar)
-    })
-    myApi.getInitialCards().then(cards => {
-      setCards(cards)
-    })
-  }, [])
+
+  const currentUser = useContext(CurrentUserContext)
+  const cards = useContext(CardsContext)
 
   return (
     <main className="main">
@@ -34,21 +21,21 @@ const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) => {
             className="profile__image-edit"
           />
           <img
-            src={userAvatar}
+            src={currentUser.avatar}
             className="profile__image"
             alt="Аватарка"
           />
         </div>
 
         <div className="profile__info">
-          <h1 className="profile__title">{userName}</h1>
+          <h1 className="profile__title">{currentUser.name}</h1>
           <button
             onClick={onEditProfile}
             aria-label="Редактировать профиль"
             type="button"
             className="profile__button-edit"
           />
-          <p className="profile__paragraph">{userDescription}</p>
+          <p className="profile__paragraph">{currentUser.about}</p>
         </div>
         <button
           onClick={onAddPlace}
@@ -59,7 +46,7 @@ const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) => {
       </section>
       <section className="elements" aria-label="Элементы">
         {cards.map((card) => (
-          <Card key={card._id} card={card} onCardClick={onCardClick} />
+          <Card onCardDelete={onCardDelete} onCardLike={onCardLike} key={card._id} card={card} onCardClick={onCardClick} />
         ))}
       </section>
     </main>
