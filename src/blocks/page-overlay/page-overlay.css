@@ -13,6 +13,11 @@
   transition: .6s;
 }
 
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+
 @media screen and (max-width: 1280px) {
   .page-overlay {
     width: 100%;

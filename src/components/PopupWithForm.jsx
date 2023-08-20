@@ -22,8 +22,9 @@ const PopupWithForm = ({ name, title, buttonText, children, isOpen, onClose, onS
             <button
               aria-label="Сохранить"
               type="submit"
-              className="popup__button popup__button-save"
+              className={`popup__button popup__button-save `}
             >
+              {/* popup__button_disabled */}
               {buttonText}
             </button>
           </form>

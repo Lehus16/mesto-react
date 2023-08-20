@@ -5,7 +5,7 @@ import { CardsContext } from "../contexts/CardsContext";
 
 
 
-const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, onCardDelete }) => {
+const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, onCardDelete, handleTrashBtnClick }) => {
 
 
 
@@ -46,7 +46,7 @@ const Main = ({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike
       </section>
       <section className="elements" aria-label="Элементы">
         {cards.map((card) => (
-          <Card onCardDelete={onCardDelete} onCardLike={onCardLike} key={card._id} card={card} onCardClick={onCardClick} />
+          <Card handleTrashBtnClick={handleTrashBtnClick} onCardDelete={onCardDelete} onCardLike={onCardLike} key={card._id} card={card} onCardClick={onCardClick} />
         ))}
       </section>
     </main>

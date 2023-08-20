@@ -13,6 +13,10 @@ const AddPlacePopup = ({ name, title, buttonText, isOpen, onClose, onSubmit }) =
       link: placeLink
     })
   }
+  useEffect(() => {
+    setPlaceName('')
+    setPlaceLink('')
+  }, [isOpen])
 
   return (
     <PopupWithForm onSubmit={handleSubmit} onClose={onClose} isOpen={isOpen} name={name} title={title} buttonText={buttonText} >

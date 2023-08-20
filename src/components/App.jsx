@@ -11,6 +11,9 @@ import { CardsContext } from "../contexts/CardsContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
+import Logo from '../images/Logo.svg';
+import PageOverlay from "./PageOverlay";
+import DeleteCardPopup from "./DeleteCardPopup";
 
 
 
@@ -20,34 +23,38 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(false);
   const [cardData, setCardData] = useState({})
+  const [isLoading, setIsLoading] = useState(true);
 
 
   function escBtnHandle(e) {
     if (e.key === 'Escape') {
       closeAllPopups();
     }
-    window.removeEventListener('keydown', escBtnHandle);
   }
 
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
     myApi.changeLikeCardStatus(card, isLiked).then((newCard) => {
       setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+    }).catch((err) => {
+      console.error(err);
     });
   }
 
-  function handleCardDelete(card) {
-    myApi.deleteCard(card).then(() => {
-      setCards((state) => state.filter((c) => c._id !== card._id));
-    });
+  function handleCardDelete(e) {
+    e.preventDefault();
+    closeAllPopups();
   }
 
   function handleUpdateUser({ name, about }) {
     myApi.patchUserInfo({ name, about }).then((data) => {
       setCurrentUser(data);
       closeAllPopups();
+    }).catch((err) => {
+      console.error(err);
     })
   }
 
@@ -56,6 +63,8 @@ function App() {
       console.log(data, avatar);
       setCurrentUser(data);
       closeAllPopups();
+    }).catch((err) => {
+      console.error(err);
     })
   }
 
@@ -63,9 +72,15 @@ function App() {
     myApi.postNewCard({ name, link }).then((newCard) => {
       setCards([newCard, ...cards]);
       closeAllPopups();
+    }).catch((err) => {
+      console.error(err);
     })
   }
 
+  const handleTrashBtnClick = () => {
+    setIsDeleteCardPopupOpen(true)
+    window.addEventListener('keydown', escBtnHandle)
+  }
 
   const handleEditAvatarClick = () => {
     setIsEditAvatarPopupOpen(true)
@@ -89,19 +104,30 @@ function App() {
   }
 
   const closeAllPopups = () => {
+    setIsDeleteCardPopupOpen(false)
     setSelectedCard(false);
     setIsEditAvatarPopupOpen(false)
     setIsEditProfilePopupOpen(false)
     setIsAddPlacePopupOpen(false)
+    window.removeEventListener('keydown', escBtnHandle);
   }
+
 
 
   useEffect(() => {
     myApi.getUserInfo().then(user => {
       setCurrentUser(user)
+    }).catch((err) => {
+      console.error(err);
     });
     myApi.getInitialCards().then(cards => {
       setCards(cards)
+    }).catch((err) => {
+      console.error(err);
+    }).finally(() => {
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 1000);
     });
   }, [])
 
@@ -109,29 +135,18 @@ function App() {
     <CurrentUserContext.Provider value={currentUser} >
       <CardsContext.Provider value={cards}>
         <div>
-          {/* <div className="page-overlay">
-                <img
-                    className="page-overlay__logo"
-                    src="<%=require('../images/Logo.svg')%>"
-                    alt=""
-                />
-            </div> */}
+          <PageOverlay isLoading={isLoading} Logo={Logo} />
           <Header />
-          <Main onCardDelete={handleCardDelete} onCardLike={handleCardLike} onCardClick={handleCardClick} onEditProfile={handleEditProfileClick} onEditAvatar={handleEditAvatarClick} onAddPlace={handleAddPlaceClick} />
+          <Main handleTrashBtnClick={handleTrashBtnClick} onCardDelete={handleCardDelete} onCardLike={handleCardLike} onCardClick={handleCardClick} onEditProfile={handleEditProfileClick} onEditAvatar={handleEditAvatarClick} onAddPlace={handleAddPlaceClick} />
           <Footer />
           <EditProfilePopup onUpdateUser={handleUpdateUser} onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} formName={'edit'} title={'Редактировать профиль'} buttonText={'Сохранить'}>
-            <Input name={'name'} minLength={2} maxLength={40} placeholder={'Имя'} type={'text'} />
-            <Input name={'occupation'} minLength={2} maxLength={200} placeholder={'О себе'} type={'text'} />
           </EditProfilePopup>
           <AddPlacePopup onSubmit={handleAddPlaceSubmit} onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} name={'add'} title={'Новое место'} buttonText={'Создать'} >
-            <Input name={'place-name'} minLength={2} maxLength={30} placeholder={'Название'} type={'text'} />
-            <Input name={'url'} placeholder={'Ссылка на картинку'} type={'url'} />
           </AddPlacePopup>
-          <PopupWithForm onClose={closeAllPopups} name={'delete'} title={'Вы уверены?'} buttonText={'Да'} >
+          <DeleteCardPopup onSubmit={handleCardDelete} isOpen={isDeleteCardPopupOpen} onClose={closeAllPopups} name={'delete'} title={'Вы уверены?'} buttonText={'Да'} >
 
-          </PopupWithForm>
+          </DeleteCardPopup>
           <EditAvatarPopup onUpdateAvatar={handleUpdateAvatar} onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} name={'avatar'} title={'Обновить аватар'} buttonText={'Сохранить'} >
-            <Input name={'avatar'} placeholder={'Ссылка на картинку'} type={'url'} />
           </EditAvatarPopup>
 
           <PopupImage card={selectedCard} cardData={cardData} onClose={closeAllPopups} />

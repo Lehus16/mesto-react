@@ -17,12 +17,12 @@ const EditProfilePopup = ({ formName, title, buttonText, isOpen, onClose, onUpda
   useEffect(() => {
     setName(currentUser.name)
     setAbout(currentUser.about)
-  }, [currentUser])
+  }, [currentUser, isOpen])
 
   return (
     <PopupWithForm onSubmit={handleSubmit} onClose={onClose} isOpen={isOpen} name={formName} title={title} buttonText={buttonText}>
-      <Input onChange={e => setName(e.target.value)} value={name} name={'name'} minLength={2} maxLength={40} placeholder={'Имя'} type={'text'} />
-      <Input onChange={e => setAbout(e.target.value)} value={about} name={'occupation'} minLength={2} maxLength={200} placeholder={'О себе'} type={'text'} />
+      <Input onChange={e => setName(e.target.value)} value={name || ''} name={'name'} minLength={2} maxLength={40} placeholder={'Имя'} type={'text'} />
+      <Input onChange={e => setAbout(e.target.value)} value={about || ''} name={'occupation'} minLength={2} maxLength={200} placeholder={'О себе'} type={'text'} />
     </PopupWithForm>
   )
 }
