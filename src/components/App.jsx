@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
-import PopupWithForm from "./PopupWithForm";
 import PopupImage from "./PopupImage";
-import Input from "./Input";
 import myApi from "../utils/Api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { CardsContext } from "../contexts/CardsContext";
+import { CardContext } from "../contexts/CardContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
@@ -26,8 +25,11 @@ function App() {
   const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(false);
   const [cardData, setCardData] = useState({})
-  const [isLoading, setIsLoading] = useState(true);
-
+  const [isPageOverlayLoading, setIsPageOverlayLoading] = useState(true);
+  const [isCardDeleteLoading, setIsCardDeleteLoading] = useState(true);
+  const [isAddPlaceLoading, setIsAddPlaceLoading] = useState(true);
+  const [isEditProfileLoading, setIsEditProfileLoading] = useState(true);
+  const [isEditAvatarLoading, setIsEditAvatarLoading] = useState(true);
 
   function escBtnHandle(e) {
     if (e.key === 'Escape') {
@@ -44,40 +46,66 @@ function App() {
     });
   }
 
-  function handleCardDelete(e) {
-    e.preventDefault();
-    closeAllPopups();
+  function handleCardDelete(card) {
+    setIsCardDeleteLoading(false)
+    myApi.deleteCard(card).then(() => {
+      setCards((state) => state.filter((c) => c._id !== card._id));
+      closeAllPopups();
+    }).catch((err) => {
+      console.error(err);
+    }).finally(() => {
+      setTimeout(() => {
+        setIsCardDeleteLoading(true)
+      }, 500);
+    })
+
   }
 
+
   function handleUpdateUser({ name, about }) {
+    setIsEditProfileLoading(false)
     myApi.patchUserInfo({ name, about }).then((data) => {
       setCurrentUser(data);
       closeAllPopups();
     }).catch((err) => {
       console.error(err);
+    }).finally(() => {
+      setTimeout(() => {
+        setIsEditProfileLoading(true)
+      }, 500);
     })
   }
 
   function handleUpdateAvatar({ avatar }) {
+    setIsEditAvatarLoading(false)
     myApi.patchUserAvatar({ avatar }).then((data) => {
-      console.log(data, avatar);
       setCurrentUser(data);
       closeAllPopups();
     }).catch((err) => {
       console.error(err);
+    }).finally(() => {
+      setTimeout(() => {
+        setIsEditAvatarLoading(true)
+      }, 500);
     })
   }
 
   function handleAddPlaceSubmit({ name, link }) {
+    setIsAddPlaceLoading(false)
     myApi.postNewCard({ name, link }).then((newCard) => {
       setCards([newCard, ...cards]);
       closeAllPopups();
     }).catch((err) => {
       console.error(err);
+    }).finally(() => {
+      setTimeout(() => {
+        setIsAddPlaceLoading(true)
+      }, 500);
     })
   }
 
-  const handleTrashBtnClick = () => {
+  const handleTrashBtnClick = (card) => {
+    setCardData(card);
     setIsDeleteCardPopupOpen(true)
     window.addEventListener('keydown', escBtnHandle)
   }
@@ -126,7 +154,7 @@ function App() {
       console.error(err);
     }).finally(() => {
       setTimeout(() => {
-        setIsLoading(false)
+        setIsPageOverlayLoading(false)
       }, 1000);
     });
   }, [])
@@ -134,24 +162,24 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser} >
       <CardsContext.Provider value={cards}>
-        <div>
-          <PageOverlay isLoading={isLoading} Logo={Logo} />
-          <Header />
-          <Main handleTrashBtnClick={handleTrashBtnClick} onCardDelete={handleCardDelete} onCardLike={handleCardLike} onCardClick={handleCardClick} onEditProfile={handleEditProfileClick} onEditAvatar={handleEditAvatarClick} onAddPlace={handleAddPlaceClick} />
-          <Footer />
-          <EditProfilePopup onUpdateUser={handleUpdateUser} onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} formName={'edit'} title={'Редактировать профиль'} buttonText={'Сохранить'}>
-          </EditProfilePopup>
-          <AddPlacePopup onSubmit={handleAddPlaceSubmit} onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} name={'add'} title={'Новое место'} buttonText={'Создать'} >
-          </AddPlacePopup>
-          <DeleteCardPopup onSubmit={handleCardDelete} isOpen={isDeleteCardPopupOpen} onClose={closeAllPopups} name={'delete'} title={'Вы уверены?'} buttonText={'Да'} >
+        <CardContext.Provider value={cardData} >
+          <div>
+            <PageOverlay isLoading={isPageOverlayLoading} Logo={Logo} />
+            <Header />
+            <Main handleTrashBtnClick={handleTrashBtnClick} onCardDelete={handleCardDelete} onCardLike={handleCardLike} onCardClick={handleCardClick} onEditProfile={handleEditProfileClick} onEditAvatar={handleEditAvatarClick} onAddPlace={handleAddPlaceClick} />
+            <Footer />
+            <EditProfilePopup isLoading={isEditProfileLoading} onUpdateUser={handleUpdateUser} onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} formName={'edit'} title={'Редактировать профиль'} buttonText={'Сохранить'}>
+            </EditProfilePopup>
+            <AddPlacePopup isLoading={isAddPlaceLoading} onSubmit={handleAddPlaceSubmit} onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} name={'add'} title={'Новое место'} buttonText={'Создать'} >
+            </AddPlacePopup>
+            <DeleteCardPopup isLoading={isCardDeleteLoading} onSubmit={handleCardDelete} isOpen={isDeleteCardPopupOpen} onClose={closeAllPopups} name={'delete'} title={'Вы уверены?'} buttonText={'Да'} />
+            <EditAvatarPopup isLoading={isEditAvatarLoading} onUpdateAvatar={handleUpdateAvatar} onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} name={'avatar'} title={'Обновить аватар'} buttonText={'Сохранить'} >
+            </EditAvatarPopup>
 
-          </DeleteCardPopup>
-          <EditAvatarPopup onUpdateAvatar={handleUpdateAvatar} onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} name={'avatar'} title={'Обновить аватар'} buttonText={'Сохранить'} >
-          </EditAvatarPopup>
+            <PopupImage card={selectedCard} cardData={cardData} onClose={closeAllPopups} />
 
-          <PopupImage card={selectedCard} cardData={cardData} onClose={closeAllPopups} />
-
-        </div>
+          </div>
+        </CardContext.Provider>
       </CardsContext.Provider>
     </CurrentUserContext.Provider>
   );

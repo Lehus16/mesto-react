@@ -15,14 +15,14 @@ const Card = ({ card, onCardClick, onCardLike, handleTrashBtnClick }) => {
   }
 
   const handleDeleteButtonClick = () => {
-    handleTrashBtnClick()
+    handleTrashBtnClick(card)
   }
 
   return (
 
     <figure className="element">
       {isOwn && <button onClick={() => {
-        handleDeleteButtonClick(card)
+        handleDeleteButtonClick()
       }} className="element__trash" />}
       <img onClick={() => {
         handleClick(card)

@@ -3,7 +3,7 @@ import PopupWithForm from './PopupWithForm'
 import Input from './Input'
 import { CurrentUserContext } from '../contexts/CurrentUserContext'
 
-const EditProfilePopup = ({ formName, title, buttonText, isOpen, onClose, onUpdateUser }) => {
+const EditProfilePopup = ({ formName, title, buttonText, isOpen, onClose, onUpdateUser, isLoading }) => {
   const currentUser = useContext(CurrentUserContext)
   const [name, setName] = useState('')
   const [about, setAbout] = useState('')
@@ -20,7 +20,7 @@ const EditProfilePopup = ({ formName, title, buttonText, isOpen, onClose, onUpda
   }, [currentUser, isOpen])
 
   return (
-    <PopupWithForm onSubmit={handleSubmit} onClose={onClose} isOpen={isOpen} name={formName} title={title} buttonText={buttonText}>
+    <PopupWithForm onSubmit={handleSubmit} onClose={onClose} isOpen={isOpen} name={formName} title={title} buttonText={!isLoading ? 'Сохранение...' : buttonText}>
       <Input onChange={e => setName(e.target.value)} value={name || ''} name={'name'} minLength={2} maxLength={40} placeholder={'Имя'} type={'text'} />
       <Input onChange={e => setAbout(e.target.value)} value={about || ''} name={'occupation'} minLength={2} maxLength={200} placeholder={'О себе'} type={'text'} />
     </PopupWithForm>
