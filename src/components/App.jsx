@@ -14,8 +14,6 @@ import Logo from '../images/Logo.svg';
 import PageOverlay from "./PageOverlay";
 import DeleteCardPopup from "./DeleteCardPopup";
 
-
-
 function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
@@ -176,8 +174,7 @@ function App() {
             <EditAvatarPopup isLoading={isEditAvatarLoading} onUpdateAvatar={handleUpdateAvatar} onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} name={'avatar'} title={'Обновить аватар'} buttonText={'Сохранить'} >
             </EditAvatarPopup>
 
-            <PopupImage card={selectedCard} cardData={cardData} onClose={closeAllPopups} />
-
+            <PopupImage card={selectedCard} onClose={closeAllPopups} />
           </div>
         </CardContext.Provider>
       </CardsContext.Provider>

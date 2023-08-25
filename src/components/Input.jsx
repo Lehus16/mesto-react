@@ -1,24 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+const Input = (props) => {
+
+  const [value, setValue] = useState(props.value || '');
 
 
-const Input = ({ name, minLength, maxLength, placeholder, type, value, onChange, ref }) => {
-
+  useEffect(() => {
+    setValue(props.value);
+  }, [props.value])
   return (
     <>
+
       <input
-        onChange={onChange}
+        onBlur={props.onBlur}
+        onChange={(e) => {
+          setValue(e.target.value);
+          props.onChange && props.onChange(e);
+        }}
         value={value}
         autoComplete="off"
         required={true}
-        minLength={minLength ? minLength : ''}
-        maxLength={maxLength ? maxLength : ''}
-        className={`popup__input popup__input_type_${name ? name : ''}`}
-        id={`popup__input-name_${name ? name : ''}`}
-        placeholder={placeholder}
-        type={type}
-        name={`popup__input_type_${name ? name : ''}`}
+        className={`popup__input popup__input_type_${props.name ? props.name : ''}`}
+        id={`popup__input-name_${props.name ? props.name : ''}`}
+        placeholder={props.placeholder}
+        type={props.type}
+        name={`popup__input_type_${props.name ? props.name : ''}`}
       />
-      <span className="popup__error popup__input-span popup__input-name-error popup__error_visible"></span>
+      <span className="popup__error popup__input-span popup__input-name-error popup__error_visible">
+        {props.errorMessage ? props.errorMessage : ''}
+      </span>
     </>
 
 

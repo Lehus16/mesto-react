@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
+import { CardContext } from "../contexts/CardContext";
 
-const PopupImage = ({ card, cardData, onClose }) => {
+const PopupImage = ({ card, onClose }) => {
+
+  const cardData = useContext(CardContext)
+
   return (
     <div onClick={() => {
       onClose();

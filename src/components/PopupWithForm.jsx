@@ -1,7 +1,6 @@
 import React from "react";
 
-const PopupWithForm = ({ name, title, buttonText, children, isOpen, onClose, onSubmit }) => {
-
+const PopupWithForm = ({ name, title, buttonText, children, isOpen, onClose, onSubmit, isValid }) => {
 
   return (
 
@@ -20,11 +19,11 @@ const PopupWithForm = ({ name, title, buttonText, children, isOpen, onClose, onS
             <h2 className="popup__title">{title}</h2>
             {children}
             <button
+              disabled={!isValid}
               aria-label="Сохранить"
               type="submit"
-              className={`popup__button popup__button-save `}
+              className={`popup__button popup__button-save ${isValid ? '' : 'popup__button_disabled'}`}
             >
-              {/* popup__button_disabled */}
               {buttonText}
             </button>
           </form>
