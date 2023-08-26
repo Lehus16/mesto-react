@@ -29,6 +29,8 @@ function App() {
   const [isEditProfileLoading, setIsEditProfileLoading] = useState(true);
   const [isEditAvatarLoading, setIsEditAvatarLoading] = useState(true);
 
+
+
   function escBtnHandle(e) {
     if (e.key === 'Escape') {
       closeAllPopups();
@@ -168,7 +170,7 @@ function App() {
             <Footer />
             <EditProfilePopup isLoading={isEditProfileLoading} onUpdateUser={handleUpdateUser} onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} formName={'edit'} title={'Редактировать профиль'} buttonText={'Сохранить'}>
             </EditProfilePopup>
-            <AddPlacePopup isLoading={isAddPlaceLoading} onSubmit={handleAddPlaceSubmit} onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} name={'add'} title={'Новое место'} buttonText={'Создать'} >
+            <AddPlacePopup isLoading={isAddPlaceLoading} submitHandler={handleAddPlaceSubmit} onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} name={'add'} title={'Новое место'} buttonText={'Создать'} >
             </AddPlacePopup>
             <DeleteCardPopup isLoading={isCardDeleteLoading} onSubmit={handleCardDelete} isOpen={isDeleteCardPopupOpen} onClose={closeAllPopups} name={'delete'} title={'Вы уверены?'} buttonText={'Да'} />
             <EditAvatarPopup isLoading={isEditAvatarLoading} onUpdateAvatar={handleUpdateAvatar} onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} name={'avatar'} title={'Обновить аватар'} buttonText={'Сохранить'} >

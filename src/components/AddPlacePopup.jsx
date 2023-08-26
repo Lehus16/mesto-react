@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import PopupWithForm from "./PopupWithForm";
 import Input from "./Input";
-import { useForm } from "react-hook-form";
+import { useForm, Controller, FormProvider } from "react-hook-form";
+import { urlRegex } from "../utils/utils";
 
 const AddPlacePopup = ({
   name,
@@ -9,92 +10,73 @@ const AddPlacePopup = ({
   buttonText,
   isOpen,
   onClose,
-  onSubmit,
+  submitHandler,
   isLoading,
 }) => {
-  const [placeName, setPlaceName] = useState("");
-  const [placeLink, setPlaceLink] = useState("");
-  const [isInputUrlValid, setIsInputUrlValid] = useState(true);
-  const [isInputNameValid, setIsInputNameValid] = useState(true);
-  const [isButtonDisabled, setButtonDisabled] = useState(true);
 
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    onSubmit({
+  const methods = useForm({
+    mode: "onChange",
+    defaultValues: {
+      placeName: "",
+      placeLink: "",
+    },
+  });
+
+
+  const { control, handleSubmit, formState: { errors, isValid }, reset } = methods
+
+  function onSubmit({ placeName, placeLink }) {
+    submitHandler({
       name: placeName,
       link: placeLink
     })
   }
 
-  const nameInputHandler = (e) => {
-    setPlaceName(e.target.value);
-    if (!e.target.value.lenght >= 2 && e.target.value.lenght <= 30) {
-      setIsInputNameValid(true);
-      setButtonDisabled(false);
-    } else {
-      setIsInputNameValid(false);
-      setButtonDisabled(true);
-    }
-  };
 
-  const urlInputHandler = (e) => {
-    setPlaceLink(e.target.value);
-    const regex =
-      /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/;
 
-    if (regex.test(e.target.value)) {
-      setIsInputUrlValid(true);
-      setButtonDisabled(false);
-    } else {
-      setIsInputUrlValid(false);
-      setButtonDisabled(true);
-    }
-  };
+
 
   useEffect(() => {
-    setPlaceName("");
-    setPlaceLink("");
-    setButtonDisabled(true);
-    setIsInputUrlValid(true);
-    setIsInputNameValid(true);
+    reset()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   return (
-    <PopupWithForm
-      isButtonDisabled={!isButtonDisabled}
-      onSubmit={handleSubmit}
-      onClose={onClose}
-      isOpen={isOpen}
-      name={name}
-      title={title}
-      buttonText={!isLoading ? "Создание..." : buttonText}
-    >
-      <Input
-        onChange={(e) => nameInputHandler(e)}
-        value={placeName}
-        name={"place-name"}
-        minLength={2}
-        maxLength={30}
-        placeholder={"Название"}
-        type={"text"}
-        validateMessage={
-          isInputNameValid
-            ? ""
-            : "Название должно быть от 2 до 30 символов"
-        }
-      />
-      <Input
-        onChange={(e) => urlInputHandler(e)}
-        value={placeLink}
-        name={"url"}
-        placeholder={"Ссылка на картинку"}
-        type={"url"}
-        validateMessage={
-          isInputUrlValid ? "" : "Укажите URL на картинку"
-        }
-      />
-    </PopupWithForm>
+    <FormProvider {...methods}>
+      <PopupWithForm
+        isValid={isValid}
+        onSubmit={handleSubmit(onSubmit)}
+        onClose={onClose}
+        isOpen={isOpen}
+        name={name}
+        title={title}
+        buttonText={!isLoading ? "Создание..." : buttonText}
+      >
+        <Controller name={"placeName"} control={control}
+          rules={{
+            required: "Обязательное к заполнению поле",
+            minLength: {
+              value: 2,
+              message: "Минимальная длина 2 символа"
+            },
+            maxLength: {
+              value: 30,
+              message: "Максимальная длина 30 символов"
+            }
+          }}
+          render={({ field: { value, onChange, onBlur } }) =>
+          (<Input errorMessage={errors?.placeName?.message} onChange={onChange} onBlur={onBlur} value={value} name={"place-name"} placeholder={"Название"} />
+          )} />
+        <Controller name={"placeLink"} control={control}
+          rules={{ required: "Обязательное к заполнению поле", pattern: { value: urlRegex, message: 'Укажите URL на картинку' } }}
+          render={({ field: { value, onChange, onBlur } }) =>
+          (<Input
+            errorMessage={errors?.placeLink?.message} onChange={onChange} onBlur={onBlur} value={value} name={"url"} placeholder={"Ссылка на картинку"} />
+          )}
+        />
+      </PopupWithForm>
+    </FormProvider>
   );
 };
 

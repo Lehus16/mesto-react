@@ -91,7 +91,7 @@ const EditProfilePopup = ({ formName, title, buttonText, isOpen, onClose, onUpda
           maxLength: {
             value: 40,
             message: "Максимальная длина 40 символов"
-          }
+          },
 
         }} render={({ field: { value, onChange, onBlur } }) => (
           <Input errorMessage={errors?.name?.message} onChange={onChange} onBlur={onBlur} value={value} name={'name'} placeholder={'Имя'} type={'text'} />

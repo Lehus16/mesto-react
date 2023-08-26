@@ -19,7 +19,7 @@ const PopupWithForm = ({ name, title, buttonText, children, isOpen, onClose, onS
             <h2 className="popup__title">{title}</h2>
             {children}
             <button
-              disabled={!isValid}
+              // disabled={!isValid}
               aria-label="Сохранить"
               type="submit"
               className={`popup__button popup__button-save ${isValid ? '' : 'popup__button_disabled'}`}
